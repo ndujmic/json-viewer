@@ -20,7 +20,6 @@ void JsonHandler::validateJsonStruct()
     QJsonParseError jsonParseError;
     QJsonDocument jsonDoc;
 
-    qDebug() << "File being validated: " << textFile();
     jsonDoc = QJsonDocument::fromJson(m_textFile.toUtf8(), &jsonParseError);
 
     if (jsonParseError.error == QJsonParseError::NoError) {
@@ -60,6 +59,7 @@ void JsonHandler::validateJsonStruct()
 
 void JsonHandler::saveFile(QString file)
 {
+    setfileName(file);
     QFile save_file(file);
     save_file.open(QFile::WriteOnly);
     save_file.write(textFile().toUtf8());

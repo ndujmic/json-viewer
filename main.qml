@@ -4,18 +4,185 @@ import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs 1.3
 import Qt.labs.platform 1.1 as Platform
-import com.company.json 1.0
 
 Item {
     id: window
-    width: 640
-    height: 480
+    width: {
+       parent.width ? parent.width : 640
+    }
+    height: {
+        parent.height ? parent.height : 480
+    }
     visible: true
+    clip: true
+
+
+        Button {
+            id: loadFileButton
+            text: "Load File"
+
+            onClicked: loadFileDialog.open();
+
+            anchors {
+                left: window.left
+                leftMargin: 2
+                bottomMargin: 4
+            }
+        }
+        Button {
+            id: newFileButton
+            text: "New File"
+
+            anchors {
+                left: loadFileButton.right
+                leftMargin: 2
+                bottomMargin: 4
+            }
+
+            onClicked: {
+                textEdit.clear()
+                saveFileDialog.open()
+            }
+        }
+        Button {
+            id: fromUrlButton
+            text: "From URL"
+
+            onClicked: restButtonDialog.open()
+
+            anchors {
+                left: newFileButton.right
+                leftMargin: 2
+                bottomMargin: 4
+            }
+        }
+
+        Rectangle {
+            id: rectangle
+            border {
+                color: "black"
+            }
+
+            width: window.width - saveAsButton.width
+            height: window.height - loadFileButton.height
+
+            anchors {
+                left: window.left
+                bottom: window.bottom
+                right: saveAsButton.left
+                top: fromUrlButton.bottom
+                leftMargin: 2
+                topMargin: 2
+                bottomMargin: 2
+                rightMargin: 2
+            }
+
+            Flickable {
+                  id: flick
+                  width: rectangle.width
+                  height: rectangle.height
+
+                  contentWidth: textEdit.paintedWidth
+                  contentHeight: textEdit.paintedHeight
+                  clip: true
+
+                  anchors {
+                      left: parent.left
+                      bottom: parent.bottom
+                      leftMargin: 0
+                      bottomMargin: 0
+                  }
+
+                  function ensureVisible(r) {
+                      if (contentX >= r.x)
+                          contentX = r.x;
+                      else if (contentX+width <= r.x+r.width)
+                          contentX = r.x+r.width-width;
+                      if (contentY >= r.y)
+                          contentY = r.y;
+                      else if (contentY+height <= r.y+r.height)
+                          contentY = r.y+r.height-height;
+                  }
+
+                  TextEdit {
+                      id: textEdit
+                      text: ""
+                      width: flick.width
+                      wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+                      selectByMouse: true
+                      selectByKeyboard: true
+                      cursorVisible: true
+
+                      textMargin: 1.5
+                      font {
+                          pixelSize: 15
+                          family: "Courier"
+
+                      }
+                      tabStopDistance: 15
+
+                      clip: true
+
+                      onTextChanged: {
+                          textEdit.text = text
+                          jsonHandler.textFile = text
+                      }
+                  }
+            }
+
+        }
+
+        Button {
+            id: saveButton
+            text: "Save"
+
+            onClicked: {
+                if (jsonHandler.fileName) {
+                    jsonHandler.saveFile(jsonHandler.fileName)
+                } else {
+                    saveFileDialog.open()
+                }
+            }
+
+            anchors {
+                bottom: saveAsButton.top
+                right: window.right
+                bottomMargin: 2
+            }
+        }
+        Button {
+            id: saveAsButton
+            text: "Save As"
+
+            anchors {
+                bottom: validateButton.top
+                right: window.right
+                bottomMargin: 2
+            }
+
+            onClicked: saveFileDialog.open()
+        }
+        Button {
+            id: validateButton
+            text: "Validate"
+
+            onClicked: {
+                jsonHandler.validateJsonStruct()
+                validateMessageDialog.open()
+            }
+
+            anchors {
+                right: window.right
+                bottom: window.bottom
+                bottomMargin: 2
+            }
+        }
 
     MessageDialog {
         visible: false
         id: validateMessageDialog
-        text: jsonHandler.validateText
+        text: jsonHandler.validateText ? jsonHandler.validateText : ""
     }
 
     Dialog {
@@ -53,14 +220,10 @@ Item {
         title: "Open File"
         nameFilters: [ "JSON files (*.json)" ]
         onAccepted: {
-
-            console.log("Accepted: " + loadFileDialog.currentFile);
-
             jsonHandler.fileName = loadFileDialog.currentFile.toString().replace("file:///", "");
             textEdit.text = jsonHandler.textFile;
             jsonHandler.initHighlighter(textEdit.textDocument)
         }
-        onRejected: { console.log("Rejected") }
     }
 
     Platform.FileDialog {
@@ -68,123 +231,8 @@ Item {
         fileMode: Platform.FileDialog.SaveFile
 
         onAccepted: {
+            jsonHandler.initHighlighter(textEdit.textDocument)
             jsonHandler.saveFile(currentFile.toString().replace("file:///", ""))
-        }
-    }
-
-    ColumnLayout {
-        id: topBottomColumn
-        width: window.width * 0.9
-        height: window.height * 0.9
-        RowLayout {
-            id: topButtonRow
-            Layout.alignment: Qt.AlignTop
-            width: topBottomColumn.width * 0.2
-            height: topBottomColumn.height * 0.2
-
-            Button {
-                id: loadFileButton
-                width: topButtonRow.width / 3
-                text: "Load File"
-                onClicked: loadFileDialog.open();
-            }
-            Button {
-                id: newFileButton
-                width: topButtonRow.width / 3
-                text: "New File"
-            }
-            Button {
-                id: fromUrlButton
-                width: topButtonRow / 3
-                text: "From URL"
-                onClicked: restButtonDialog.open()
-            }
-        }
-
-        RowLayout {
-            id: textAndRightButtons
-            Layout.alignment: Qt.AlignBottom
-            width: topBottomColumn.width * 0.8
-            height: topBottomColumn.height * 0.8
-
-            Rectangle {
-                id: rectangle
-                anchors.left: parent.left
-
-                Layout.alignment: Qt.AlignLeft
-                height: textAndRightButtons.height
-                width: textAndRightButtons.width * 0.7
-                border {
-                    color: "black"
-                }
-
-                Flickable {
-                      id: flick
-
-//                      width: 300; height: 200;
-                      anchors.left: rectangle.left
-
-                      width: rectangle.width
-                      height: rectangle.height
-                      contentWidth: textEdit.paintedWidth
-                      contentHeight: textEdit.paintedHeight
-                      clip: true
-
-                      function ensureVisible(r)
-                      {
-                          if (contentX >= r.x)
-                              contentX = r.x;
-                          else if (contentX+width <= r.x+r.width)
-                              contentX = r.x+r.width-width;
-                          if (contentY >= r.y)
-                              contentY = r.y;
-                          else if (contentY+height <= r.y+r.height)
-                              contentY = r.y+r.height-height;
-                       }
-                      TextEdit {
-                          id: textEdit
-                          text: ""
-                          width: flick.width
-                          font.pixelSize: 14
-                          wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                          selectByMouse: true
-                          selectByKeyboard: true
-
-                          clip: true
-
-                          onTextChanged: {
-                              textEdit.text = text
-                              jsonHandler.textFile = text
-                          }
-                      }
-                }
-
-            }
-
-            ColumnLayout {
-                anchors.right: parent.right
-                id: leftButtons
-                Layout.alignment: Qt.AlignBottom
-                width: textAndRightButtons.width * 0.3
-
-                Button {
-                    id: saveButton
-                    text: "Save"
-                    onClicked: saveFileDialog.open()
-                }
-                Button {
-                    id: saveAsButton
-                    text: "Save As"
-                }
-                Button {
-                    id: validateButton
-                    text: "Validate"
-                    onClicked: {
-                        jsonHandler.validateJsonStruct()
-                        validateMessageDialog.open()
-                    }
-                }
-            }
         }
     }
 }
