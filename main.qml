@@ -14,7 +14,7 @@ Item {
         parent.height ? parent.height : 480
     }
     visible: true
-    clip: true
+    clip: true   
 
 
         Button {
@@ -168,6 +168,7 @@ Item {
             text: "Validate"
 
             onClicked: {
+                jsonHandler.initHighlighter(textEdit.textDocument)
                 jsonHandler.validateJsonStruct()
                 validateMessageDialog.open()
             }
