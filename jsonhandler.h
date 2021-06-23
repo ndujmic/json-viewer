@@ -47,7 +47,7 @@ public slots:
             return;
 
         m_fileName = fileName;
-        setTextFile(get_loaded_file());
+        setTextFile(fileContentAsString());
         emit fileNameChanged(m_fileName);
     }
 
@@ -77,7 +77,7 @@ signals:
     void validateTextChanged(QString validateText);
 
 private:
-    QString get_loaded_file();
+    QString fileContentAsString();
 
     QString m_fileName;
     QString m_textFile;
