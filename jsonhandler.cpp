@@ -19,45 +19,65 @@ void JsonHandler::validateJsonStruct()
 {
     QJsonParseError jsonParseError;
     QJsonDocument jsonDoc;
-    QHash<QString, int> jsonErrorHash;
+    QString offsetMessage;
+    QString errorMessage;
 
     jsonDoc = QJsonDocument::fromJson(m_textFile.toUtf8(), &jsonParseError);
 
-    qDebug() << jsonParseError.error;
+    offsetMessage = QString(" at character ").append(QString::number(jsonParseError.offset));
 
-    if (jsonParseError.error == QJsonParseError::NoError) {
-        setvalidateText(QString("No error"));
-    } else if (jsonParseError.error == QJsonParseError::UnterminatedObject) {
-        setvalidateText(QString("There is a curly bracket missing at character ").append(QString::number(jsonParseError.offset)));
-    } else if (jsonParseError.error == QJsonParseError::MissingNameSeparator) {
-        setvalidateText(QString("There is a comma separator missing at character ").append(QString::number(jsonParseError.offset)));
-    } else if (jsonParseError.error == QJsonParseError::UnterminatedArray) {
-        setvalidateText(QString("The array is not correctly terminated at character ").append(QString::number(jsonParseError.offset)));
-    } else if (jsonParseError.error == QJsonParseError::MissingValueSeparator) {
-        setvalidateText(QString("There is a colon separator missing at character ").append(QString::number(jsonParseError.offset)));
-    } else if (jsonParseError.error == QJsonParseError::IllegalValue) {
-        setvalidateText(QString("The value is illegal at character ").append(QString::number(jsonParseError.offset)));
-    } else if (jsonParseError.error == QJsonParseError::TerminationByNumber) {
-        setvalidateText(QString("There illegal number at the end at character ").append(QString::number(jsonParseError.offset)));
-    } else if (jsonParseError.error == QJsonParseError::IllegalNumber) {
-        setvalidateText(QString("The number is not well formed at character ").append(QString::number(jsonParseError.offset)));
-    } else if (jsonParseError.error == QJsonParseError::IllegalEscapeSequence) {
-        setvalidateText(QString("Illegal escape sequence at character ").append(QString::number(jsonParseError.offset)));
-    } else if (jsonParseError.error == QJsonParseError::IllegalUTF8String) {
-        setvalidateText(QString("Illegal UTF8 sequence at character ").append(QString::number(jsonParseError.offset)));
-    } else if (jsonParseError.error == QJsonParseError::UnterminatedString) {
-        setvalidateText(QString("A string wasn't terminated with a quote at character ").append(QString::number(jsonParseError.offset)));
-    } else if (jsonParseError.error == QJsonParseError::MissingObject) {
-        setvalidateText(QString("An object was expected but couldn't be found at character ").append(QString::number(jsonParseError.offset)));
-    } else if (jsonParseError.error == QJsonParseError::DeepNesting) {
-        setvalidateText(QString("The JSON document is too deeply nested for the parser to parse it."));
-    } else if (jsonParseError.error == QJsonParseError::DocumentTooLarge) {
-        setvalidateText(QString("The JSON document is too large for the parser to parse it."));
-    } else if (jsonParseError.error == QJsonParseError::GarbageAtEnd) {
-        setvalidateText(QString("The parsed document contains additional garbage characters at the end."));
-    } else {
-        setvalidateText(QString("There was an unspecified error."));
+    switch(jsonParseError.error) {
+        case 0:
+            errorMessage = QString("No error occurred");
+            break;
+        case 1:
+            errorMessage = QString("There is a curly bracket missing");
+            break;
+        case 2:
+            errorMessage = QString("There is a comma separator missing");
+            break;
+        case 3:
+            errorMessage = QString("The array is not correctly terminated");
+            break;
+        case 4:
+            errorMessage = QString("There is a colon separator missing");
+            break;
+        case 5:
+            errorMessage = QString("The value is illegal");
+            break;
+        case 6:
+            errorMessage = QString("There is illegal number at the end");
+            break;
+        case 7:
+            errorMessage = QString("The number is not well formed");
+            break;
+        case 8:
+            errorMessage = QString("Illegal escape sequence");
+            break;
+        case 9:
+            errorMessage = QString("Illegal UTF8 sequence");
+            break;
+        case 10:
+            errorMessage = QString("A string wasn't terminated with a quote");
+            break;
+        case 11:
+            errorMessage = QString("An object was expected but couldn't be found");
+            break;
+        case 12:
+            errorMessage = QString("The JSON document is too deeply nested for the parser to parse it");
+            break;
+        case 13:
+            errorMessage = QString("The JSON document is too large for the parser to parse it");
+            break;
+        case 14:
+            errorMessage = QString("The parsed document contains additional garbage characters at the end");
+            break;
+        default:
+            errorMessage = QString("There was an unspecified error");
+
     }
+
+    setvalidateText(errorMessage.append(offsetMessage));
 }
 
 void JsonHandler::saveFile(QString file)
