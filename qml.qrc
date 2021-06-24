@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>MyMessageDialog.qml</file>
+        <file>FromUrlDialog.qml</file>
+        <file>LoadFileDialog.qml</file>
+        <file>SaveFileDialog.qml</file>
     </qresource>
 </RCC>

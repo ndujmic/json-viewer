@@ -180,60 +180,16 @@ Item {
             }
         }
 
-    MessageDialog {
-        visible: false
-        id: validateMessageDialog
-        text: jsonHandler.validateText ? jsonHandler.validateText : ""
-    }
-
-    Dialog {
+    FromUrlDialog {
         id: restButtonDialog
-        visible: false
-        title: "Enter the url"
-        // @disable-check M16
-        standardButtons: StandardButton.Ok | StandardButton.Cancel
-
-        onAccepted: {
-            function get_url_request(url, callback) {
-                    var http_request = new XMLHttpRequest();
-                    http_request.onreadystatechange = (function(myxhr) {
-                        return function() {
-                            callback(myxhr);
-                        }
-                    })(http_request);
-                    http_request.open('GET', url, true);
-                    http_request.send('');
-                }
-            get_url_request(urlTextArea.text, function (resp) {
-                textEdit.text = resp.responseText
-                jsonHandler.initHighlighter(textEdit.textDocument)
-            });
-        }
-
-        TextArea {
-            id: urlTextArea
-            placeholderText: "Your URL goes here!"
-        }
     }
-
-    Platform.FileDialog {
+    MyMessageDialog {
+        id: validateMessageDialog
+    }
+    LoadFileDialog {
         id: loadFileDialog
-        title: "Open File"
-        nameFilters: [ "JSON files (*.json)" ]
-        onAccepted: {
-            jsonHandler.fileName = loadFileDialog.currentFile.toString().replace("file:///", "");
-            textEdit.text = jsonHandler.textFile;
-            jsonHandler.initHighlighter(textEdit.textDocument)
-        }
     }
-
-    Platform.FileDialog {
+    SaveFileDialog {
         id: saveFileDialog
-        fileMode: Platform.FileDialog.SaveFile
-
-        onAccepted: {
-            jsonHandler.initHighlighter(textEdit.textDocument)
-            jsonHandler.saveFile(currentFile.toString().replace("file:///", ""))
-        }
     }
 }
