@@ -24,7 +24,11 @@ void JsonHandler::validateJsonStruct()
 
     jsonDoc = QJsonDocument::fromJson(m_textFile.toUtf8(), &jsonParseError);
 
-    offsetMessage = QString(" at character ").append(QString::number(jsonParseError.offset));
+    if (jsonParseError.error == QJsonParseError::NoError) {
+        offsetMessage = QString("");
+    } else {
+        offsetMessage = QString(" at character ").append(QString::number(jsonParseError.offset));
+    }
 
     switch(jsonParseError.error) {
         case 0:
