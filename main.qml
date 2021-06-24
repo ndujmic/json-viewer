@@ -16,7 +16,6 @@ Item {
     visible: true
     clip: true   
 
-
         Button {
             id: loadFileButton
             text: "Load File"
@@ -103,7 +102,10 @@ Item {
                       else if (contentY+height <= r.y+r.height)
                           contentY = r.y+r.height-height;
                   }
-
+                  ScrollView {
+                      width: rectangle.width
+                      height: rectangle.height
+                      ScrollBar.vertical.policy: ScrollBar.AlwaysOn
                   TextEdit {
                       id: textEdit
                       text: ""
@@ -131,7 +133,7 @@ Item {
                   }
             }
 
-        }
+        }}
 
         Button {
             id: saveButton
