@@ -13,11 +13,11 @@ public:
     JSONHighlighter(QTextDocument *parent = 0);
 
 private:
-    void appendNewRule(QRegExp exp, QColor color);
+    void appendNewRule(QString exp, QColor color);
 
     struct HighlightingRule
          {
-             QRegExp pattern;
+             QString pattern;
              QTextCharFormat format;
          };
          QVector<HighlightingRule> rules;
