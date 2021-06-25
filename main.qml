@@ -106,31 +106,31 @@ Item {
                       width: rectangle.width
                       height: rectangle.height
                       ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-                  TextEdit {
-                      id: textEdit
-                      text: ""
-                      width: flick.width
-                      wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                      TextEdit {
+                          id: textEdit
+                          text: ""
+                          width: flick.width
+                          wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
-                      selectByMouse: true
-                      selectByKeyboard: true
-                      cursorVisible: true
+                          selectByMouse: true
+                          selectByKeyboard: true
+                          cursorVisible: true
 
-                      textMargin: 1.5
-                      font {
-                          pixelSize: 15
-                          family: "Courier"
+                          textMargin: 1.5
+                          font {
+                              pixelSize: 15
+                              family: "Courier"
 
+                          }
+                          tabStopDistance: 15
+
+                          clip: true
+
+                          onTextChanged: {
+                              textEdit.text = text
+                              jsonHandler.textFile = text
+                          }
                       }
-                      tabStopDistance: 15
-
-                      clip: true
-
-                      onTextChanged: {
-                          textEdit.text = text
-                          jsonHandler.textFile = text
-                      }
-                  }
             }
 
         }}
